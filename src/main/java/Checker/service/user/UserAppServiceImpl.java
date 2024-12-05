@@ -19,10 +19,11 @@ public class UserAppServiceImpl implements UserAppService {
     private UserRepository userRepository;
 
     @Override
-    public void register(UserAppDtos user) {
+    public String register(UserAppDtos user) {
         checkEmptyFields(user);
         registerValidation(user);
         saveNewRegisterUserDetails(user);
+        return "Register successfully";
     }
 
 
@@ -34,7 +35,7 @@ public class UserAppServiceImpl implements UserAppService {
     }
 
     private void checkEmptyFields(UserAppDtos user) {
-        if (user.getFirstName().isBlank()) throw new IllegalArgumentException("First name cannot be empty");
+        if (user.getFirstName() == null || user.getFirstName().isEmpty()) throw new IllegalArgumentException("First name cannot be empty");
         if (user.getLastName().isBlank()) throw new IllegalArgumentException("Last name cannot be empty");
         if (user.getPassword().isBlank()) throw new IllegalArgumentException("Password cannot be empty");
         if (user.getUsername().isBlank()) throw new IllegalArgumentException("Username cannot be empty");

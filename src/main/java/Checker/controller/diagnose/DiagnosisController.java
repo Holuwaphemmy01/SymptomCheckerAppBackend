@@ -60,13 +60,20 @@ package Checker.controller.diagnose;
 import Checker.dtos.request.LoginRequest;
 import Checker.dtos.request.SymptomRequest;
 import Checker.dtos.request.UserAppDtos;
+import Checker.dtos.response.APIResponse;
 import Checker.dtos.response.SymptomResponse;
 import Checker.service.SymptomMatch.SymptomServiceImpl;
 import Checker.service.user.UserAppServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
 @RequestMapping("/api/user")
@@ -78,16 +85,23 @@ public class DiagnosisController {
     @Autowired
     private SymptomServiceImpl symptomService;
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/register")
-    public void register(@RequestBody UserAppDtos user) {
+    public ResponseEntity<?> register(@RequestBody UserAppDtos user) {
         try {
-            userAppService.register(user);
-        } catch (Exception e) {
-            e.getMessage();
+            String code = userAppService.register(user);
+            APIResponse apiResponse = new APIResponse();
+            apiResponse.setSuccess(true);
+            apiResponse.setMessage(code);
+            return new ResponseEntity<>(apiResponse, CREATED);
+        }catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
         }
+
+
     }
 
-
+    @CrossOrigin(origins = "*")
     @PostMapping("/login")
     public String login(@RequestBody LoginRequest user) {
         try {
@@ -99,6 +113,7 @@ public class DiagnosisController {
 
     }
 
+    @CrossOrigin(origins = "*")
     @GetMapping("/getDiagnosis")
     public List<SymptomResponse> diagnosis(@RequestBody SymptomRequest symptomRequest){
         return symptomService.findSymptom(symptomRequest);
